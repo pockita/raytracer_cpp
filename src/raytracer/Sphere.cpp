@@ -11,7 +11,7 @@
 
 namespace raytracer {
 
-Sphere::Sphere(const Point3& center, double radius) : center_(center), radius_(radius) {
+Sphere::Sphere(const Point3& center, double radius, int materialId) : center_(center), radius_(radius), materialId_(materialId) {
     if (radius <= getTol()) {
         throw std::invalid_argument{"radius must be > 0"};
     }
@@ -40,7 +40,7 @@ std::optional<HitData> Sphere::hit(const Point3& origin, const Vector3& dir, dou
     }
 
     const auto p = moved(origin, dir, t);
-    return std::make_optional<HitData>(dir, p, (p - center_) / radius_, t);
+    return std::make_optional<HitData>(dir, p, (p - center_) / radius_, materialId_, t);
 }
 
 } // raytracer

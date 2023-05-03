@@ -19,13 +19,10 @@ namespace raytracer {
 using math::Point3;
 using math::Vector3;
 
-struct ObjectData {
-    ObjectData(std::shared_ptr<ICollider> pCollider, std::shared_ptr<IMaterial> pMaterial);
-
-    std::shared_ptr<ICollider> pCollider;
-    std::shared_ptr<IMaterial> pMaterial;
-};
-
-Color raytrace(const Point3& origin, const Vector3& dir, const std::vector<ObjectData>& objects, int depth);
+Color raytrace(const Point3& origin,
+               const Vector3& dir,
+               const std::vector<std::shared_ptr<ICollider>>& colliderPtrs,
+               const std::vector<std::shared_ptr<IMaterial>>& materialPtrs,
+               int depth);
 
 }

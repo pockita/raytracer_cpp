@@ -32,21 +32,17 @@ int main() {
     const int nSamplesPerPixel = 100;
     const int maxDepth = 50;
 
-    auto materialGround = std::make_shared<Lambertian>(Color{0.8, 0.8, 0.0});
-    auto materialCenter = std::make_shared<Lambertian>(Color{0.2, 0.2, 0.5});
-    auto materialLeft = std::make_shared<Dielectric>(1.5);
-    auto materialRight = std::make_shared<Metal>(Color{0.8, 0.6, 0.2}, 0);
-
-    auto colliderGround = std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0);
-    auto colliderCenter = std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5);
-    auto colliderLeft = std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5);
-    auto colliderRight = std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5);
-
-    std::vector<ObjectData> objects {
-        {colliderGround, materialGround},
-        {colliderCenter, materialCenter},
-        {colliderLeft, materialLeft},
-        {colliderRight, materialRight}
+    std::vector<std::shared_ptr<IMaterial>> materialPtrs{
+        std::make_shared<Lambertian>(Color{0.8, 0.8, 0.0}),
+        std::make_shared<Lambertian>(Color{0.2, 0.2, 0.5}),
+        std::make_shared<Dielectric>(1.5),
+        std::make_shared<Metal>(Color{0.8, 0.6, 0.2}, 0),
+    };
+    std::vector<std::shared_ptr<ICollider>> colliderPtrs{
+        std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0, 0),
+        std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, 1),
+        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, 2),
+        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, 3)
     };
 
     const Point3 lookFrom{3.0,3.0,2.0};
@@ -72,7 +68,7 @@ int main() {
                 auto u = (i + randomDoubleInUnitInterval()) / (imageWidth - 1);
                 auto v = (j + randomDoubleInUnitInterval()) / (imageHeight - 1);
                 const auto& [origin, dir] = camera.calcRay(u, v);
-                auto c = raytrace(origin, dir, objects, maxDepth);
+                auto c = raytrace(origin, dir, colliderPtrs, materialPtrs, maxDepth);
                 r += c.r();
                 g += c.g();
                 b += c.b();
