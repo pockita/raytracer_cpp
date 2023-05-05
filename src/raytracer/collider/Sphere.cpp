@@ -43,4 +43,9 @@ std::optional<HitData> Sphere::hit(const Point3& origin, const Vector3& dir, dou
     return std::make_optional<HitData>(dir, p, (p - center_) / radius_, materialId_, t);
 }
 
+BoundingBox Sphere::boundingBox() const {
+    auto v = Vector3::one * radius_;
+    return {center_ - v, center_ + v};
+}
+
 } // raytracer

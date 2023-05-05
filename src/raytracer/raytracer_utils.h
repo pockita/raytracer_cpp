@@ -18,6 +18,8 @@ double randomDoubleInUnitInterval();
 
 double randomDouble(double min, double max);
 
+int randomInt(int min, int max);
+
 Vector3 randomVector(double min, double max);
 
 Vector3 randomUnitVector();

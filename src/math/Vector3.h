@@ -29,6 +29,7 @@ struct Vector3 final {
     bool isZero(double tol = 0.0) const { return sqrLen() <= tol * tol; }
     bool isUnit(double tol = 0.0) const { return 0.5 * std::fabs(sqrLen() - 1.0 - tol * tol) <= tol; }
 
+    double& operator[](std::size_t i) { return coords_[i]; }
     Vector3& operator+=(const Vector3& v);
     Vector3& operator-=(const Vector3& v);
     Vector3& operator*=(double a);

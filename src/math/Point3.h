@@ -22,6 +22,7 @@ struct Point3 final {
     double y() const { return coords_[1]; }
     double z() const { return coords_[2]; }
 
+    double& operator[](std::size_t i) { return coords_[i]; }
     Point3& operator+=(const Vector3& v);
     Point3& operator-=(const Vector3& v);
     void move(const Vector3& v, double t);

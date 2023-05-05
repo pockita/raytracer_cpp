@@ -10,6 +10,7 @@
 #include "Point3.h"
 #include "Vector3.h"
 
+#include "ColliderTree.h"
 #include "Camera.h"
 #include "Dielectric.h"
 #include "Lambertian.h"
@@ -44,6 +45,7 @@ int main() {
         std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, 2),
         std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, 3)
     };
+    ColliderTree sceneCollider{colliderPtrs, 0, colliderPtrs.size()};
 
     const Point3 lookFrom{3.0,3.0,2.0};
     const Point3 lookAt{0.0,0.0,-1.0};
@@ -68,7 +70,7 @@ int main() {
                 auto u = (i + randomDoubleInUnitInterval()) / (imageWidth - 1);
                 auto v = (j + randomDoubleInUnitInterval()) / (imageHeight - 1);
                 const auto& [origin, dir] = camera.calcRay(u, v);
-                auto c = raytrace(origin, dir, colliderPtrs, materialPtrs, maxDepth);
+                auto c = raytrace(origin, dir, sceneCollider, materialPtrs, maxDepth);
                 r += c.r();
                 g += c.g();
                 b += c.b();
@@ -79,8 +81,9 @@ int main() {
         }
     }
 
+    std::cout << duration_cast<std::chrono::seconds>(steady_clock::now() - start).count() << std::endl;
+
     ppm::write("c:\\dev\\image.ppm", imageWidth, imageHeight, colors);
 
-    std::cout << duration_cast<std::chrono::seconds>(steady_clock::now() - start).count() << std::endl;
     return 0;
 }

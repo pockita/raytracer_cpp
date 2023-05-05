@@ -1,4 +1,4 @@
-add_library(raytracer raytracer.cpp raytracer.h)
+add_library(raytracer)
 
 target_sources(raytracer
         PUBLIC
@@ -8,6 +8,7 @@ target_sources(raytracer
         IMaterial.h
         Lambertian.h
         Metal.h
+        raytracer.h
         raytracer_utils.h
 
         PRIVATE
@@ -17,6 +18,7 @@ target_sources(raytracer
         IMaterial.cpp
         Lambertian.cpp
         Metal.cpp
+        raytracer.cpp
         raytracer_utils.cpp)
 
 target_include_directories(raytracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

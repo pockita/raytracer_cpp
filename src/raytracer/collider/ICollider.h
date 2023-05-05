@@ -4,10 +4,13 @@
 
 #pragma once
 
+#include <memory>
 #include <optional>
 
 #include "Point3.h"
 #include "Vector3.h"
+
+#include "BoundingBox.h"
 
 namespace raytracer {
 
@@ -27,6 +30,9 @@ struct HitData final {
 struct ICollider {
     virtual ~ICollider() = default;
     virtual std::optional<HitData> hit(const Point3& origin, const Vector3& dir, double minT, double maxT) const = 0;
+    virtual BoundingBox boundingBox() const = 0;
 };
+
+using ColliderPtr = std::shared_ptr<ICollider>;
 
 } // raytracer

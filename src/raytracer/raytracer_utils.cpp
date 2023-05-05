@@ -21,6 +21,10 @@ double randomDouble(double min, double max) {
     return min + (max - min) * randomDoubleInUnitInterval();
 }
 
+int randomInt(int min, int max) {
+    return static_cast<int>(randomDouble(min, max + 1.0 - 1.0e-8));
+}
+
 Vector3 randomVector(double min, double max) {
     return {randomDouble(min, max), randomDouble(min, max), randomDouble(min, max)};
 }

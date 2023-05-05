@@ -21,7 +21,7 @@ using math::Vector3;
 
 Color raytrace(const Point3& origin,
                const Vector3& dir,
-               const std::vector<std::shared_ptr<ICollider>>& colliderPtrs,
+               const ICollider& sceneCollider,
                const std::vector<std::shared_ptr<IMaterial>>& materialPtrs,
                int depth);
 
