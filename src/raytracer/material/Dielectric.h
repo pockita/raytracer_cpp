@@ -11,6 +11,7 @@ namespace raytracer {
 struct Dielectric final : IMaterial {
     explicit Dielectric(double refractiveIndex);
     std::optional<TraceData> trace(const Vector3& unitInV, const Vector3& unitN, bool isOutside) const override;
+    Color getColor(double u, double v) const override { return Color::white; }
 
 private:
     double refractiveIndex_;

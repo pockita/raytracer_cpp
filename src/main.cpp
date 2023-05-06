@@ -10,13 +10,14 @@
 #include "Point3.h"
 #include "Vector3.h"
 
-#include "ColliderTree.h"
 #include "Camera.h"
+#include "ColliderTree.h"
 #include "Dielectric.h"
 #include "Lambertian.h"
 #include "Metal.h"
 #include "raytracer.h"
 #include "raytracer_utils.h"
+#include "SolidColor.h"
 #include "Sphere.h"
 
 #include "ppm.h"
@@ -33,9 +34,12 @@ int main() {
     const int nSamplesPerPixel = 100;
     const int maxDepth = 50;
 
+    auto groundTexture = std::make_shared<SolidColor>(Color{0.8, 0.8, 0.0});
+    auto centerTexture = std::make_shared<SolidColor>(Color{0.2, 0.2, 0.5});
+
     std::vector<std::shared_ptr<IMaterial>> materialPtrs{
-        std::make_shared<Lambertian>(Color{0.8, 0.8, 0.0}),
-        std::make_shared<Lambertian>(Color{0.2, 0.2, 0.5}),
+        std::make_shared<Lambertian>(groundTexture),
+        std::make_shared<Lambertian>(centerTexture),
         std::make_shared<Dielectric>(1.5),
         std::make_shared<Metal>(Color{0.8, 0.6, 0.2}, 0),
     };

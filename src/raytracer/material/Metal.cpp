@@ -28,7 +28,7 @@ std::optional<TraceData> Metal::trace(const Vector3& unitInV, const Vector3& uni
     if (dot(v, unitN) <= 0.0) {
         return std::nullopt;
     }
-    return std::make_optional<TraceData>(albedo_, v.isZero(getTol()) ? reflectedV : v);
+    return std::make_optional<TraceData>(v.isZero(getTol()) ? reflectedV : v);
 }
 
 } // raytracer

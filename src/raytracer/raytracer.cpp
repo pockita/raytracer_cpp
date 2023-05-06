@@ -44,7 +44,7 @@ Color raytrace(const Point3& origin,
     }
 
     const auto optTrace = pMaterial->trace(unitDir, hit.n, hit.isOutside);
-    return optTrace ? optTrace->attenuation * raytrace(hit.p, optTrace->outV, sceneCollider, materialPtrs, depth - 1) : Color::black;
+    return optTrace ? pMaterial->getColor(hit.u, hit.v) * raytrace(hit.p, optTrace->outV, sceneCollider, materialPtrs, depth - 1) : Color::black;
 }
 
 }

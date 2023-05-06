@@ -2,6 +2,8 @@ add_executable(raytracer_cpp)
 
 target_sources(raytracer_cpp
         PRIVATE
+        image_utils.h
+        image_utils.cpp
         main.cpp
         ppm.h
         ppm.cpp)

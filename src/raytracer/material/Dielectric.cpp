@@ -47,7 +47,7 @@ std::optional<TraceData> Dielectric::trace(const Vector3& unitInV, const Vector3
 
     const auto canRefract = refractiveRatio * sinTheta <= 1.0 && calcReflectance(cosTheta, refractiveRatio) < randomDoubleInUnitInterval();
     const auto v = canRefract ? refracted(unitInV, unitN, refractiveRatio) : reflected(unitInV, unitN);
-    return std::make_optional<TraceData>(Color::white, v);
+    return std::make_optional<TraceData>(v);
 }
 
 } // raytracer

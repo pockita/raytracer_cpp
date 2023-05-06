@@ -40,7 +40,12 @@ std::optional<HitData> Sphere::hit(const Point3& origin, const Vector3& dir, dou
     }
 
     const auto p = moved(origin, dir, t);
-    return std::make_optional<HitData>(dir, p, (p - center_) / radius_, materialId_, t);
+    const auto n = (p - center_) / radius_;
+
+    const auto theta = std::acos(-n.y());
+    const auto phi = std::atan2(-n.z(), n.x()) + M_PI;
+
+    return std::make_optional<HitData>(dir, p, n, materialId_, phi / (2.0 * M_PI), theta / M_PI, t);
 }
 
 BoundingBox Sphere::boundingBox() const {

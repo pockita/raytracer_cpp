@@ -2,10 +2,10 @@
  * Created by Alex (pockitaxd@gmail.com)
  */
 
-#include "IMaterial.h"
+#include "SolidColor.h"
 
 namespace raytracer {
 
-TraceData::TraceData(const Vector3& outV) : outV(outV) {}
+SolidColor::SolidColor(const Color& color) : color_(color) {}
 
 } // raytracer
