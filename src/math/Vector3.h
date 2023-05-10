@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <iosfwd>
 
 namespace math {
 
@@ -75,5 +76,7 @@ inline Vector3 cross(const Vector3& lv, const Vector3& rv) {
         lv[0] * rv[1] - lv[1] * rv[0]
     };
 }
+
+std::ostream& operator<<(std::ostream& os, const Vector3& v);
 
 } // math

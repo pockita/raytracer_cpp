@@ -4,6 +4,7 @@
 
 #include "Vector3.h"
 
+#include <iostream>
 #include <stdexcept>
 
 namespace math {
@@ -72,6 +73,10 @@ Vector3 normalized(const Vector3& v) {
         throw std::invalid_argument{"v must be not 0"};
     }
     return {v[0] / l, v[1] / l, v[2] / l};
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector3& v) {
+    return os << '(' << v[0] << ", " << v[1] << ", " << v[2] << ')';
 }
 
 } // math

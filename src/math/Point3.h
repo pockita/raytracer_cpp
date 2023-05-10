@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cstddef>
+#include <iosfwd>
 
 #include "Vector3.h"
 
@@ -54,5 +55,7 @@ inline double sqrDist(const Point3& p, const Point3& q) {
 inline double dist(const Point3& p, const Point3& q) {
     return (p - q).len();
 }
+
+std::ostream& operator<<(std::ostream& os, const Point3& p);
 
 } // math
