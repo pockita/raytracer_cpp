@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "ColliderTree.h"
 #include "Dielectric.h"
+#include "DiffuseLight.h"
 #include "Lambertian.h"
 #include "Metal.h"
 #include "raytracer.h"
@@ -36,27 +37,32 @@ int main() {
 
     auto groundTexture = std::make_shared<SolidColor>(Color{0.8, 0.8, 0.0});
     auto centerTexture = std::make_shared<SolidColor>(Color{0.2, 0.2, 0.5});
+    auto lightTexture = std::make_shared<SolidColor>(Color{4.0, 4.0, 4.0});
 
     std::vector<std::shared_ptr<IMaterial>> materialPtrs{
         std::make_shared<Lambertian>(groundTexture),
         std::make_shared<Lambertian>(centerTexture),
         std::make_shared<Dielectric>(1.5),
         std::make_shared<Metal>(Color{0.8, 0.6, 0.2}, 0),
+        std::make_shared<DiffuseLight>(lightTexture),
     };
     std::vector<std::shared_ptr<ICollider>> colliderPtrs{
         std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0, 0),
         std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, 1),
         std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, 2),
-        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, 3)
+        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, 3),
+        std::make_shared<Sphere>(Point3{0.0, 5.0, 0.0}, 0.25, 4),
     };
     ColliderTree sceneCollider{colliderPtrs, 0, colliderPtrs.size()};
+
+    Color backgroundColor{0.35, 0.4, 0.5};
 
     const Point3 lookFrom{3.0,3.0,2.0};
     const Point3 lookAt{0.0,0.0,-1.0};
     const Vector3 viewUp{0.0, 1.0, 0.0};
     const double verticalFieldOfView = 20.0;
     const double focusDist = (lookFrom - lookAt).len() + 0.5;
-    const double aperture = 0.5;
+    const double aperture = 0.0;
     Camera camera{lookFrom, lookAt, viewUp, verticalFieldOfView, aspectRatio, focusDist, aperture};
 
     const double gamma = 1.5;
@@ -74,7 +80,7 @@ int main() {
                 auto u = (i + randomDoubleInUnitInterval()) / (imageWidth - 1);
                 auto v = (j + randomDoubleInUnitInterval()) / (imageHeight - 1);
                 const auto& [origin, dir] = camera.calcRay(u, v);
-                auto c = raytrace(origin, dir, sceneCollider, materialPtrs, maxDepth);
+                auto c = raytrace(origin, dir, backgroundColor, sceneCollider, materialPtrs, maxDepth);
                 r += c.r();
                 g += c.g();
                 b += c.b();

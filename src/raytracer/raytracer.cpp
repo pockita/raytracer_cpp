@@ -13,6 +13,7 @@ namespace raytracer {
 
 Color raytrace(const Point3& origin,
                const Vector3& dir,
+               const Color& backgroundColor,
                const ICollider& sceneCollider,
                const std::vector<std::shared_ptr<IMaterial>>& materialPtrs,
                int depth) {
@@ -30,7 +31,7 @@ Color raytrace(const Point3& origin,
     const auto unitDir = normalized(dir);
     auto optHit = sceneCollider.hit(origin, dir, minT, maxT);
     if (!optHit) {
-        return blend(Color{0.5, 0.7, 1.0}, Color::white, 0.5 * (unitDir.y() + 1.0));
+        return backgroundColor;
     }
     const auto& hit = *optHit;
 
@@ -43,8 +44,15 @@ Color raytrace(const Point3& origin,
         throw std::invalid_argument{"pMaterial must be not null"};
     }
 
+    const auto emittedColor = pMaterial->getEmittedColor(hit.u, hit.v, hit.p);
+
     const auto optTrace = pMaterial->trace(unitDir, hit.n, hit.isOutside);
-    return optTrace ? pMaterial->getColor(hit.u, hit.v, hit.p) * raytrace(hit.p, optTrace->outV, sceneCollider, materialPtrs, depth - 1) : Color::black;
+    if (!optTrace) {
+        return emittedColor;
+    }
+
+    const auto color = pMaterial->getColor(hit.u, hit.v, hit.p);
+    return emittedColor + color * raytrace(hit.p, optTrace->outV, backgroundColor, sceneCollider, materialPtrs, depth - 1);
 }
 
 }

@@ -27,6 +27,7 @@ struct IMaterial {
     virtual ~IMaterial() = default;
     virtual std::optional<TraceData> trace(const Vector3& unitInV, const Vector3& unitN, bool isOutside) const = 0;
     virtual Color getColor(double u, double v, const Point3& p) const = 0;
+    virtual Color getEmittedColor(double u, double v, const Point3& p) const = 0;
 };
 
 using MaterialPtr = std::shared_ptr<IMaterial>;

@@ -1,12 +1,14 @@
 target_sources(raytracer
         PUBLIC
         Dielectric.h
+        DiffuseLight.h
         IMaterial.h
         Lambertian.h
         Metal.h
 
         PRIVATE
         Dielectric.cpp
+        DiffuseLight.cpp
         IMaterial.cpp
         Lambertian.cpp
         Metal.cpp)
