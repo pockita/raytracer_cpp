@@ -4,20 +4,18 @@
 
 #pragma once
 
-#include <vector>
-
 #include "ITexture.h"
+#include "Perlin.h"
 
 namespace raytracer {
 
-struct ImageTexture : ITexture {
-    ImageTexture(unsigned width, unsigned height, std::vector<Color>&& colors);
+struct NoiseTexture : ITexture {
+    explicit NoiseTexture(double scale = 1.0);
     Color getColor(double u, double v, const Point3& p) const override;
 
 private:
-    unsigned width_;
-    unsigned height_;
-    std::vector<Color> colors_;
+    Perlin perlin_;
+    double scale_;
 };
 
 } // raytracer

@@ -10,7 +10,7 @@ namespace raytracer {
 
 struct SolidColor final : ITexture {
     explicit SolidColor(const Color& color);
-    Color getColor(double u, double v) const override { return color_; }
+    Color getColor(double u, double v, const Point3& p) const override { return color_; }
 
 private:
     Color color_;

@@ -23,7 +23,7 @@ ImageTexture::ImageTexture(unsigned width, unsigned height, std::vector<Color>&&
     }
 }
 
-Color ImageTexture::getColor(double u, double v) const {
+Color ImageTexture::getColor(double u, double v, const Point3& p) const {
     u = std::clamp(u, 0.0, 1.0);
     v = std::clamp(v, 0.0, 1.0);
     const auto i = std::min(static_cast<unsigned>(u * width_), width_ - 1);
