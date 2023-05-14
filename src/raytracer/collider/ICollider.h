@@ -18,6 +18,14 @@ using math::Point3;
 using math::Vector3;
 
 struct HitData final {
+    HitData(const Point3& p,
+            const Vector3& unitN,
+            bool isOutside,
+            int materialId,
+            double u,
+            double v,
+            double t);
+
     HitData(const Vector3& dir,
             const Point3& p,
             const Vector3& unitOutsideN,

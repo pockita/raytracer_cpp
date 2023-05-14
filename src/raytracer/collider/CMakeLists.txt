@@ -5,12 +5,16 @@ target_sources(raytracer
         ColliderTree.h
         ICollider.h
         Sphere.h
+        Transformed.h
+        XyRectangle.h
 
         PRIVATE
         BoundingBox.cpp
         ColliderList.cpp
         ColliderTree.cpp
         ICollider.cpp
-        Sphere.cpp)
+        Sphere.cpp
+        Transformed.cpp
+        XyRectangle.cpp)
 
 target_include_directories(raytracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

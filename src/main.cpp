@@ -12,14 +12,13 @@
 
 #include "Camera.h"
 #include "ColliderTree.h"
-#include "Dielectric.h"
 #include "DiffuseLight.h"
 #include "Lambertian.h"
-#include "Metal.h"
 #include "raytracer.h"
 #include "raytracer_utils.h"
 #include "SolidColor.h"
-#include "Sphere.h"
+#include "Transformed.h"
+#include "XyRectangle.h"
 
 #include "ppm.h"
 
@@ -29,38 +28,74 @@ int main() {
     using namespace math;
     using namespace raytracer;
 
-    const double aspectRatio = 3.0 / 2.0;
-    const int imageWidth = 800;
+    const double aspectRatio = 1.0;
+    const int imageWidth = 500;
     const int imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int nSamplesPerPixel = 100;
-    const int maxDepth = 50;
+    const int nSamplesPerPixel = 250;
+    const int maxDepth = 10;
 
-    auto groundTexture = std::make_shared<SolidColor>(Color{0.8, 0.8, 0.0});
-    auto centerTexture = std::make_shared<SolidColor>(Color{0.2, 0.2, 0.5});
-    auto lightTexture = std::make_shared<SolidColor>(Color{4.0, 4.0, 4.0});
+    auto addBox = [](
+            double xSize, double ySize, double zSize,
+            double rx, double ry, double rz,
+            const Vector3& offset,
+            int materialId,
+            std::vector<ColliderPtr>& colliderPtrs) {
 
-    std::vector<std::shared_ptr<IMaterial>> materialPtrs{
-        std::make_shared<Lambertian>(groundTexture),
-        std::make_shared<Lambertian>(centerTexture),
-        std::make_shared<Dielectric>(1.5),
-        std::make_shared<Metal>(Color{0.8, 0.6, 0.2}, 0),
-        std::make_shared<DiffuseLight>(lightTexture),
+        auto pXyFace = std::make_shared<XyRectangle>(0.0, xSize, 0.0, ySize, 0.0, materialId);
+        auto pYzFace = std::make_shared<XyRectangle>(0.0, ySize, 0.0, zSize, 0.0, materialId);
+        auto pZxFace = std::make_shared<XyRectangle>(0.0, zSize, 0.0, xSize, 0.0, materialId);
+
+        std::vector<ColliderPtr> aFaceColliders;
+        aFaceColliders.push_back(std::make_shared<Transformed>(pXyFace, 0.0, 0.0, 0.0, Vector3{0.0, 0.0, zSize}));
+        aFaceColliders.push_back(std::make_shared<Transformed>(pXyFace, 0.0, 180.0, 0.0, Vector3{xSize, 0.0, 0.0}));
+        aFaceColliders.push_back(std::make_shared<Transformed>(pYzFace, 90.0, 0.0, 90.0, Vector3{xSize, 0.0, 0.0}));
+        aFaceColliders.push_back(std::make_shared<Transformed>(pYzFace, -90.0, 0.0, 90.0, Vector3{0.0, 0.0, zSize}));
+        aFaceColliders.push_back(std::make_shared<Transformed>(pZxFace, -90.0, -90.0, 0.0, Vector3{0.0, ySize, 0.0}));
+        aFaceColliders.push_back(std::make_shared<Transformed>(pZxFace, 90.0, -90.0, 0.0, Vector3{xSize, 0.0, 0.0}));
+
+        for (auto& pCollider : aFaceColliders) {
+            colliderPtrs.push_back(std::make_shared<Transformed>(std::move(pCollider), rx, ry, rz, offset));
+        }
     };
-    std::vector<std::shared_ptr<ICollider>> colliderPtrs{
-        std::make_shared<Sphere>(Point3{0.0, -100.5, -1.0}, 100.0, 0),
-        std::make_shared<Sphere>(Point3{0.0, 0.0, -1.0}, 0.5, 1),
-        std::make_shared<Sphere>(Point3{-1.0, 0.0, -1.0}, 0.5, 2),
-        std::make_shared<Sphere>(Point3{1.0, 0.0, -1.0}, 0.5, 3),
-        std::make_shared<Sphere>(Point3{0.0, 5.0, 0.0}, 0.25, 4),
+
+    auto pGrayTexture = std::make_shared<SolidColor>(Color{0.73, 0.73, 0.73});
+    auto pRedTexture = std::make_shared<SolidColor>(Color{0.65, 0.05, 0.05});
+    auto pGreenTexture = std::make_shared<SolidColor>(Color{0.12, 0.45, 0.15});
+    auto pLightTexture = std::make_shared<SolidColor>(Color{15.0, 15.0, 15.0});
+
+    std::vector<MaterialPtr> materialPtrs{
+        std::make_shared<Lambertian>(pGrayTexture),
+        std::make_shared<Lambertian>(pRedTexture),
+        std::make_shared<Lambertian>(pGreenTexture),
+        std::make_shared<DiffuseLight>(pLightTexture),
     };
+
+    auto pGrayXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 0);
+    auto pRedXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 1);
+    auto pGreenXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 2);
+    auto pLightXYRect = std::make_shared<XyRectangle>(0.0, 130.0, 0.0, 130.0, 0.0, 3);
+
+    std::vector<ColliderPtr> colliderPtrs{
+        std::make_shared<Transformed>(pGrayXYRect, 90.0, 0.0, 0.0, Vector3{0.0, 0.0, 0.0}),
+        std::make_shared<Transformed>(pGrayXYRect, 90.0, 0.0, 0.0, Vector3{0.0, 555.0, 0.0}),
+        std::make_shared<Transformed>(pLightXYRect, 90.0, 0.0, 0.0, Vector3{213.0, 555.0 - 1.0e-6, 227.0}),
+
+        std::make_shared<Transformed>(pGrayXYRect, 0.0, 0.0, 0.0, Vector3{0.0, 0.0, 555.0}),
+
+        std::make_shared<Transformed>(pGreenXYRect, 0.0, -90.0, 0.0, Vector3{555.0, 0.0, 0.0}),
+        std::make_shared<Transformed>(pRedXYRect, 0.0, -90.0, 0.0, Vector3{0.0, 0.0, 0.0}),
+    };
+
+    addBox(165.0, 165.0, 165.0, 0.0, -18.0, 0.0, {130.0, 0.0, 65.0}, 0, colliderPtrs);
+    addBox(165.0, 330.0, 165.0, 0.0, 15.0, 0.0, {256.0, 0.0, 295.0}, 0, colliderPtrs);
+
     ColliderTree sceneCollider{colliderPtrs, 0, colliderPtrs.size()};
+    auto backgroundColor = Color{0.0, 0.0, 0.0};
 
-    Color backgroundColor{0.35, 0.4, 0.5};
-
-    const Point3 lookFrom{3.0,3.0,2.0};
-    const Point3 lookAt{0.0,0.0,-1.0};
+    const Point3 lookFrom{278, 278, -800};
+    const Point3 lookAt{278,278,0};
     const Vector3 viewUp{0.0, 1.0, 0.0};
-    const double verticalFieldOfView = 20.0;
+    const double verticalFieldOfView = 40.0;
     const double focusDist = (lookFrom - lookAt).len() + 0.5;
     const double aperture = 0.0;
     Camera camera{lookFrom, lookAt, viewUp, verticalFieldOfView, aspectRatio, focusDist, aperture};
