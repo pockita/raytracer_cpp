@@ -3,6 +3,7 @@ target_sources(raytracer
         BoundingBox.h
         ColliderList.h
         ColliderTree.h
+        ConstMedium.h
         ICollider.h
         Sphere.h
         Transformed.h
@@ -12,6 +13,7 @@ target_sources(raytracer
         BoundingBox.cpp
         ColliderList.cpp
         ColliderTree.cpp
+        ConstMedium.cpp
         ICollider.cpp
         Sphere.cpp
         Transformed.cpp

@@ -12,7 +12,9 @@
 
 #include "Camera.h"
 #include "ColliderTree.h"
+#include "ConstMedium.h"
 #include "DiffuseLight.h"
+#include "Isotropic.h"
 #include "Lambertian.h"
 #include "raytracer.h"
 #include "raytracer_utils.h"
@@ -31,19 +33,20 @@ int main() {
     const double aspectRatio = 1.0;
     const int imageWidth = 500;
     const int imageHeight = static_cast<int>(imageWidth / aspectRatio);
-    const int nSamplesPerPixel = 250;
-    const int maxDepth = 10;
+    const int nSamplesPerPixel = 100;
+    const int maxDepth = 20;
 
     auto addBox = [](
             double xSize, double ySize, double zSize,
             double rx, double ry, double rz,
             const Vector3& offset,
+            int lambertianMaterialId,
             int materialId,
             std::vector<ColliderPtr>& colliderPtrs) {
 
-        auto pXyFace = std::make_shared<XyRectangle>(0.0, xSize, 0.0, ySize, 0.0, materialId);
-        auto pYzFace = std::make_shared<XyRectangle>(0.0, ySize, 0.0, zSize, 0.0, materialId);
-        auto pZxFace = std::make_shared<XyRectangle>(0.0, zSize, 0.0, xSize, 0.0, materialId);
+        auto pXyFace = std::make_shared<XyRectangle>(0.0, xSize, 0.0, ySize, 0.0, lambertianMaterialId);
+        auto pYzFace = std::make_shared<XyRectangle>(0.0, ySize, 0.0, zSize, 0.0, lambertianMaterialId);
+        auto pZxFace = std::make_shared<XyRectangle>(0.0, zSize, 0.0, xSize, 0.0, lambertianMaterialId);
 
         std::vector<ColliderPtr> aFaceColliders;
         aFaceColliders.push_back(std::make_shared<Transformed>(pXyFace, 0.0, 0.0, 0.0, Vector3{0.0, 0.0, zSize}));
@@ -53,32 +56,36 @@ int main() {
         aFaceColliders.push_back(std::make_shared<Transformed>(pZxFace, -90.0, -90.0, 0.0, Vector3{0.0, ySize, 0.0}));
         aFaceColliders.push_back(std::make_shared<Transformed>(pZxFace, 90.0, -90.0, 0.0, Vector3{xSize, 0.0, 0.0}));
 
-        for (auto& pCollider : aFaceColliders) {
-            colliderPtrs.push_back(std::make_shared<Transformed>(std::move(pCollider), rx, ry, rz, offset));
-        }
+        ColliderTree tree{aFaceColliders, 0, aFaceColliders.size()};
+        auto pConstMedium = std::make_shared<ConstMedium>(std::make_shared<ColliderTree>(aFaceColliders, 0, aFaceColliders.size()), 0.01, materialId);
+        colliderPtrs.push_back(std::make_shared<Transformed>(std::move(pConstMedium), rx, ry, rz, offset));
     };
 
     auto pGrayTexture = std::make_shared<SolidColor>(Color{0.73, 0.73, 0.73});
     auto pRedTexture = std::make_shared<SolidColor>(Color{0.65, 0.05, 0.05});
     auto pGreenTexture = std::make_shared<SolidColor>(Color{0.12, 0.45, 0.15});
-    auto pLightTexture = std::make_shared<SolidColor>(Color{15.0, 15.0, 15.0});
+    auto pLightTexture = std::make_shared<SolidColor>(Color{7.0, 7.0, 7.0});
+    auto pWhiteTexture = std::make_shared<SolidColor>(Color::white);
+    auto pBlackTexture = std::make_shared<SolidColor>(Color::black);
 
     std::vector<MaterialPtr> materialPtrs{
         std::make_shared<Lambertian>(pGrayTexture),
         std::make_shared<Lambertian>(pRedTexture),
         std::make_shared<Lambertian>(pGreenTexture),
         std::make_shared<DiffuseLight>(pLightTexture),
+        std::make_shared<Isotropic>(pWhiteTexture),
+        std::make_shared<Isotropic>(pBlackTexture),
     };
 
     auto pGrayXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 0);
     auto pRedXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 1);
     auto pGreenXYRect = std::make_shared<XyRectangle>(0.0, 555.0, 0.0, 555.0, 0.0, 2);
-    auto pLightXYRect = std::make_shared<XyRectangle>(0.0, 130.0, 0.0, 130.0, 0.0, 3);
+    auto pLightXYRect = std::make_shared<XyRectangle>(0.0, 330.0, 0.0, 325.0, 0.0, 3);
 
     std::vector<ColliderPtr> colliderPtrs{
         std::make_shared<Transformed>(pGrayXYRect, 90.0, 0.0, 0.0, Vector3{0.0, 0.0, 0.0}),
         std::make_shared<Transformed>(pGrayXYRect, 90.0, 0.0, 0.0, Vector3{0.0, 555.0, 0.0}),
-        std::make_shared<Transformed>(pLightXYRect, 90.0, 0.0, 0.0, Vector3{213.0, 555.0 - 1.0e-6, 227.0}),
+        std::make_shared<Transformed>(pLightXYRect, 90.0, 0.0, 0.0, Vector3{113.0, 555.0 - 1.0e-6, 127.0}),
 
         std::make_shared<Transformed>(pGrayXYRect, 0.0, 0.0, 0.0, Vector3{0.0, 0.0, 555.0}),
 
@@ -86,8 +93,8 @@ int main() {
         std::make_shared<Transformed>(pRedXYRect, 0.0, -90.0, 0.0, Vector3{0.0, 0.0, 0.0}),
     };
 
-    addBox(165.0, 165.0, 165.0, 0.0, -18.0, 0.0, {130.0, 0.0, 65.0}, 0, colliderPtrs);
-    addBox(165.0, 330.0, 165.0, 0.0, 15.0, 0.0, {256.0, 0.0, 295.0}, 0, colliderPtrs);
+    addBox(165.0, 165.0, 165.0, 0.0, -18.0, 0.0, {130.0, 0.0, 65.0}, 0, 4, colliderPtrs);
+    addBox(165.0, 330.0, 165.0, 0.0, 15.0, 0.0, {256.0, 0.0, 295.0}, 0, 5, colliderPtrs);
 
     ColliderTree sceneCollider{colliderPtrs, 0, colliderPtrs.size()};
     auto backgroundColor = Color{0.0, 0.0, 0.0};

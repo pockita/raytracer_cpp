@@ -3,6 +3,7 @@ target_sources(raytracer
         Dielectric.h
         DiffuseLight.h
         IMaterial.h
+        Isotropic.h
         Lambertian.h
         Metal.h
 
@@ -10,6 +11,7 @@ target_sources(raytracer
         Dielectric.cpp
         DiffuseLight.cpp
         IMaterial.cpp
+        Isotropic.cpp
         Lambertian.cpp
         Metal.cpp)
 
